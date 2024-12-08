@@ -1,0 +1,26 @@
+{
+    "name": "C++ Blogging Software",
+    // Use the pre-built image
+    "image": "andreheber/cpp-sqlite-blog-dev:latest",
+    // Use the non-root user we created
+    "remoteUser": "vscode",
+    // Mount your source code
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "workspaceFolder": "/workspace",
+    // Mount SSH keys for git operations
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+    ],
+    "forwardPorts": [
+        8080
+    ],
+    "postCreateCommand": "cmake -S . -B build",
+    // Use zsh
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "configureZshAsDefaultShell": true,
+            "installOhMyZsh": true
+        }
+    }
+}

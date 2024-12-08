@@ -1,0 +1,1 @@
+docker build -f .devcontainer/Dockerfile -t andreheber/cpp-sqlite-blog-dev .
