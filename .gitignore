@@ -33,3 +33,7 @@
 
 # build directory
 build
+
+# conan
+conan/p
+conan/.conan.db

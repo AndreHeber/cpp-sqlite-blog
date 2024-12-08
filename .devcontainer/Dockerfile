@@ -6,12 +6,12 @@ RUN apt-get update && apt-get install -y \
     cmake \
     clang \
     git \
-    libboost-all-dev \
     libssl-dev \
     gdb \
     curl \
     vim \
     zsh \
+    pipx \
     wget \
     sudo \
     && apt-get clean
@@ -27,6 +27,10 @@ RUN groupadd $USERNAME \
 # Install Oh My Zsh
 USER $USERNAME
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# Install conan
+RUN pipx install conan
+RUN conan profile detect --force
 
 # Set up workspace directory
 WORKDIR /workspaces/blog
