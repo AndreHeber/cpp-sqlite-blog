@@ -1,11 +1,13 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/asio.hpp>
+#include <boost/json.hpp>
 #include <iostream>
 #include <string>
 
 namespace beast = boost::beast;     // From <boost/beast.hpp>
 namespace http = beast::http;       // From <boost/beast/http.hpp>
+namespace json = boost::json;
 namespace net = boost::asio;        // From <boost/asio.hpp>
 using tcp = net::ip::tcp;           // From <boost/asio/ip/tcp.hpp>
 
@@ -17,15 +19,34 @@ void http_server(tcp::acceptor &acceptor, tcp::socket &socket) {
             http::request<http::string_body> req;
             http::read(socket, buffer, req);
 
-            http::response<http::string_body> res{
-                http::status::ok, req.version()
-            };
-            res.set(http::field::server, "Beast");
-            res.set(http::field::content_type, "text/html");
-            res.body() = "<html><body><h1>Welcome to Blogging Software!</h1></body></html>";
-            res.prepare_payload();
 
-            http::write(socket, res);
+            // check the request target 
+            if (req.target() == "/api/status") {
+                json::object response = {
+                    {"status", "running"},
+                    {"timestamp", json::string(std::to_string(std::time(nullptr)))},
+                    {"version", "0.1.0"}
+                };
+
+                http::response<http::string_body> res{
+                    http::status::ok, req.version()
+                };
+                res.set(http::field::server, "Beast");
+                res.set(http::field::content_type, "application/json");
+                res.body() = json::serialize(response);
+                res.prepare_payload();
+                http::write(socket, res);
+            } else {
+                http::response<http::string_body> res{
+                    http::status::ok, req.version()
+                };
+                res.set(http::field::server, "Beast");
+                res.set(http::field::content_type, "text/html");
+                res.body() = "<html><body><h1>Welcome to Blogging Software!</h1></body></html>";
+                res.prepare_payload();
+
+                http::write(socket, res);
+            }
         }
 
         socket.shutdown(tcp::socket::shutdown_send, ec);
